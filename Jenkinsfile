@@ -44,7 +44,7 @@ pipeline {
     stage('Run Regression Tests') {
       steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
-        	git 'https://github.com/parthasm95/Automation-API-RestAssured.git'
+        	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
         	sh "mvn clean test -Denv=${envName}"
         }
       }
@@ -76,6 +76,5 @@ pipeline {
         ])
       }
     }
-
   }
 }
