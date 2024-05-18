@@ -15,12 +15,22 @@ pipeline {
     stage('Build') {
       steps {
         git 'https://github.com/parthasm95/simple-java-maven-app.git'
-        bat "mvn -Dmaven.test.failure.ignore=true clean package"
+        sh 'mvn -B -DskipTests clean package'
       }
       post {
         success {
-          junit '**/target/surefire-reports/TEST-*.xml'
           archiveArtifacts 'target/*.jar'
+        }
+      }
+    }
+    
+    stage("Run Unit Tests") {
+      steps {
+        sh 'mvn test'
+      }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
         }
       }
     }
