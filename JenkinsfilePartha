@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+
+  tools {
+    maven 'maven'
+  }
+
+  environment {
+
+    BUILD_NUMBER = "${BUILD_NUMBER}"
+
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        git 'https://github.com/parthasm95/simple-java-maven-app.git'
+        bat "mvn -Dmaven.test.failure.ignore=true clean package"
+      }
+      post {
+        success {
+          junit '**/target/surefire-reports/TEST-*.xml'
+          archiveArtifacts 'target/*.jar'
+        }
+      }
+    }
+
+    stage("Deploy to QA") {
+      steps {
+        echo("deploy to qa done")
+      }
+    }
+
+    stage('Run Regression Tests') {
+      steps {
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+        	git 'https://github.com/parthasm95/Automation-API-RestAssured.git'
+        	sh "mvn clean test -Denv=${envName}"
+        }
+      }
+    }
+
+    stage('Publish Regression Extent Report') {
+      steps {
+        publishHTML([allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: false,
+          reportDir: 'target',
+          reportFiles: 'APIExecutionReport.html',
+          reportName: 'API HTML Regression Extent Report',
+          reportTitles: ''
+        ])
+      }
+    }
+
+  }
+}
