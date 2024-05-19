@@ -45,21 +45,12 @@ pipeline {
       steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
         	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
-        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile=src/test/resources/testrunners/testng_skome.xml"
-        }
-      }
-    }
-
-    stage('Run Regression Tests') {
-      steps {
-        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
-        	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
-        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile=src/test/resources/testrunners/testng_regression.xml"
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile='src/test/resources/testrunners/testng_skome.xml'"
         }
       }
     }
     
-    stage('Publish Allure Reports') {
+    stage('Publish Smoke Test Allure Reports') {
       steps {
         script {
           allure([
@@ -73,7 +64,43 @@ pipeline {
        }
      }
 
-    stage('Publish Regression Extent Report') {
+    stage('Publish Smoke Test Extent Report') {
+      steps {
+        publishHTML([allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: false,
+          reportDir: 'TestReports',
+          reportFiles: 'TestExecutionReport.html',
+          reportName: 'API HTML Smoke Extent Report',
+          reportTitles: ''
+        ])
+      }
+    }
+
+    stage('Run Regression Tests') {
+      steps {
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+        	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile='src/test/resources/testrunners/testng_regression.xml'"
+        }
+      }
+    }
+    
+    stage('Publish Regression Test Allure Reports') {
+      steps {
+        script {
+          allure([
+            includeProperties: false,
+            jdk: '',
+            properties: [],
+            reportBuildPolicy: 'ALWAYS',
+            results: [[path: '/allure-results']]
+           ])
+         }
+       }
+     }
+
+    stage('Publish Regression Test Extent Report') {
       steps {
         publishHTML([allowMissing: false,
           alwaysLinkToLastBuild: false,
