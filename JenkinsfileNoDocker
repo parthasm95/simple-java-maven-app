@@ -40,12 +40,21 @@ pipeline {
         echo("deploy to qa done")
       }
     }
+    
+    stage('Run Smoke Tests') {
+      steps {
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+        	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile=src/test/resources/testrunners/testng_skome.xml"
+        }
+      }
+    }
 
     stage('Run Regression Tests') {
       steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
         	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
-        	sh "mvn clean test -Denv=${envName}"
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFile=src/test/resources/testrunners/testng_regression.xml"
         }
       }
     }
