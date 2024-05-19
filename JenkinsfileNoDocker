@@ -69,8 +69,8 @@ pipeline {
         publishHTML([allowMissing: false,
           alwaysLinkToLastBuild: false,
           keepAll: false,
-          reportDir: 'target',
-          reportFiles: 'APIExecutionReport.html',
+          reportDir: 'TestReports',
+          reportFiles: 'TestExecutionReport.html',
           reportName: 'API HTML Regression Extent Report',
           reportTitles: ''
         ])
