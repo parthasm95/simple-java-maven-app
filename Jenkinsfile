@@ -45,7 +45,7 @@ pipeline {
       steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
         	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
-        	sh "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_smoke.xml"
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_smoke.xml"
         }
       }
     }
@@ -54,7 +54,7 @@ pipeline {
       steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
         	git branch: 'main', url: 'https://github.com/parthasm95/Automation-API-RestAssured.git'
-        	sh "mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
+        	sh "mvn clean test -Denv=${envName} -Dsurefire.suiteXmlFiles=src/test/resources/testrunners/testng_regression.xml"
         }
       }
     }
