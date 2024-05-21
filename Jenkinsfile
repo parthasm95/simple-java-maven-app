@@ -49,33 +49,6 @@ pipeline {
         }
       }
     }
-    
-    stage('Publish Smoke Test Allure Reports') {
-      steps {
-        script {
-          allure([
-            includeProperties: false,
-            jdk: '',
-            properties: [],
-            reportBuildPolicy: 'ALWAYS',
-            results: [[path: '/allure-results']]
-           ])
-         }
-       }
-     }
-
-    stage('Publish Smoke Test Extent Report') {
-      steps {
-        publishHTML([allowMissing: false,
-          alwaysLinkToLastBuild: false,
-          keepAll: false,
-          reportDir: 'TestReports',
-          reportFiles: 'TestExecutionReport.html',
-          reportName: 'API HTML Smoke Extent Report',
-          reportTitles: ''
-        ])
-      }
-    }
 
     stage('Run Regression Tests') {
       steps {
